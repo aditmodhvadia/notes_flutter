@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(new MyApp());
 
@@ -7,7 +8,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Notes',
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -26,18 +27,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int _counter;
 
-  void _incrementCounter() {
+  void _incrementCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _counter++;
+      _counter = (prefs.getInt('counter') ?? 0) + 1;
     });
+    await prefs.setInt('counter', _counter);
   }
+
+  final barColor = const Color(0xFF3C40C6);
+  final bgColor = const Color(0xFFF4C724);
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+        backgroundColor: bgColor,
         appBar: new AppBar(
+          backgroundColor: barColor,
           title: new Text(widget.title),
         ),
         body: new Center(
@@ -56,29 +64,20 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         floatingActionButton: RawMaterialButton(
           onPressed: _incrementCounter,
-          fillColor: Colors.blue,
+          fillColor: barColor,
           splashColor: Colors.orange,
           shape: StadiumBorder(),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: const <Widget>[
-              Icon(Icons.note_add, color: Colors.white,),
+              Icon(
+                Icons.note_add,
+                color: Colors.white,
+              ),
               SizedBox(width: 8.0),
               Text('Add')
             ],
           ),
-        )
-
-        // new FloatingActionButton(
-        //   onPressed: _incrementCounter,
-        //   tooltip: 'Add Note',
-        //   child: Row(
-        //     children: <Widget>[
-        //       new Icon(Icons.note_add),
-        //       Text('Add')
-        //     ],
-        //   ),
-        // ),
-        );
+        ));
   }
 }
